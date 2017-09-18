@@ -7,7 +7,8 @@ import {
     ScrollView,
     TouchableHighlight,
     Animated,
-    AsyncStorage
+    AsyncStorage,
+    Image,
 } from 'react-native';
 
 // DISABLE WARNINGS
@@ -15,29 +16,38 @@ console.disableYellowBox = true;
 
 class TopBar extends Component {
     
-    previous() {
+    constructor(props) {
+        super(props);
         
-    }
-    next() {
+        this.state = {
+            viewType: props.type,
+            size: 64,
+            buttons: [],
+        }
+        
+        if (this.state.viewType == 'week') {
+            this.state.size = 96;
+            this.state.buttons.push(
+                <View style={styles.topbar__navigation}>
+                    <TouchableHighlight style={styles.topbar__previous} onPress={() => this.props.previous()} underlayColor={'#E0E0E0'}>
+                        <Image style={styles.topbar__button} source={require('./img/previous.png')} />
+                    </TouchableHighlight>
+                    <TouchableHighlight style={styles.topbar__next} onPress={() => this.props.next()} underlayColor={'#E0E0E0'}>
+                        <Image style={styles.topbar__button} source={require('./img/next.png')} />
+                    </TouchableHighlight>
+                </View>
+            );
+        }
         
     }
     
     render() {
         return (
-            <View style={styles.topbar}>
-                <Text style={styles.topbar__title}>M E M E N T O</Text>
-                <View style={styles.topbar__navigation}>
-                    <TouchableHighlight onPress={this.previous.bind(this)} underlayColor={'transparent'}>
-                        <View style={styles.topbar__previous}>
-                            <Text>&lt-</Text>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={this.next.bind(this)} underlayColor={'transparent'}>
-                        <View style={styles.topbar__next}>
-                            <Text>-></Text>
-                        </View>
-                    </TouchableHighlight>
+            <View style={[styles.topbar, {height: this.state.size}]}>
+                <View style={styles.topbar__titlecontainer}>
+                    <Text style={styles.topbar__title}>M E M E N T O</Text>
                 </View>
+                {this.state.buttons}
             </View>
         );
     }
@@ -122,9 +132,7 @@ export default class Memento extends Component {
         
         this.state = {};
         
-        AsyncStorage.getItem('subjects').then((value) => {
-            this.state.subjects = value;
-        }).done();
+        this.state.viewType = 'week';
         
         if (this.state.semesters == null || this.state.semesters == undefined) {
             this.state.semesters = {
@@ -170,7 +178,18 @@ export default class Memento extends Component {
             };
         }
         
-        this.state.view = this.getWeekView('spring', 7);
+        this.state.semester = 'spring';
+        this.state.week = 7;
+        this.state.maxweek = this.calculateWeeksBetween(
+            new Date(this.state.semesters[this.state.semester].start),
+            new Date(this.state.semesters[this.state.semester].end)
+        );
+        
+        this.state.view = this.getWeekView(this.state.semester, this.state.week);
+    }
+    
+    componentDidMount() {
+        this.setState((previousState) => { return previousState });
     }
     
     getWeekView(semester, week) {
@@ -195,6 +214,17 @@ export default class Memento extends Component {
                 {subjects}
             </ScrollView>
         );
+    }
+    
+    calculateWeeksBetween(start, end) {
+        var ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
+        
+        var start_ms = start.getTime();
+        var end_ms = end.getTime();
+        
+        var difference_ms = Math.abs(end_ms - start_ms);
+        
+        return Math.floor(difference_ms / ONE_WEEK);
     }
     
     getFullDate(date, day) {
@@ -237,12 +267,24 @@ export default class Memento extends Component {
         return number;
     }
     
+    previous() {
+        if (this.state.week != 1) {
+            this.setState({view: this.getWeekView(this.state.semester, this.state.week - 1)});
+            this.setState({week: this.state.week - 1});
+        }
+    }
+    
+    next() {
+        if (this.state.week != this.state.maxweek) {
+            this.setState({view: this.getWeekView(this.state.semester, this.state.week + 1)});
+            this.setState({week: this.state.week + 1});
+        }
+    }
+    
     render() {
-        
-        
         return (
             <View style={styles.container}>
-                <TopBar />
+                <TopBar type={this.state.viewType} previous={this.previous.bind(this)} next={this.next.bind(this)} />
                 {this.state.view}
             </View>
         );

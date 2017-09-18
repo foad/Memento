@@ -13,12 +13,39 @@ var styles = React.StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#FFFFFF',
-        height: 64,
         elevation: 5,
+    },
+    topbar__titlecontainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     topbar__title: {
         fontFamily: 'sans-serif-thin',
         fontSize: 18,
+    },
+    topbar__navigation: {
+        height: 32,
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        backgroundColor: '#EFEFEF',
+        alignSelf: 'stretch',
+        alignItems: 'stretch',
+        justifyContent: 'center',
+    },
+    topbar__previous: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    topbar__next: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    topbar__button: {
+        width: 16,
+        height: 16,
     },
     main: {
         flex: 1,
