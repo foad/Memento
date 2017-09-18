@@ -30,6 +30,12 @@ var styles = React.StyleSheet.create({
         paddingBottom: 8,
         textAlign: 'left',
     },
+    main__weektitle: {
+        color: '#3E4A51',
+        fontSize: 12,
+        fontWeight: 'bold',
+        marginTop: 16,
+    },
     subject: {
         backgroundColor: '#FFFFFF',
         padding: 16,
@@ -62,12 +68,13 @@ var styles = React.StyleSheet.create({
         color: '#3F4B52',
         fontSize: 18,
         fontFamily: 'sans-serif-thin',
-        paddingTop: 4,
+        paddingTop: 0,
         paddingBottom: 4,
     },
     subject__room: {
         color: '#9C9C9C',
         fontSize: 12,
+        paddingBottom: 8,
     },
     subject__start: {
         padding: 16,
@@ -85,6 +92,40 @@ var styles = React.StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 16,
     },
+    triangle__blue: {
+        width: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        borderStyle: 'solid',
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        borderTopWidth: 16,
+        borderRightWidth: 16,
+        borderBottomWidth: 0,
+        borderLeftWidth: 0,
+        borderTopColor: '#6699CC',
+        borderRightColor: 'transparent',
+        borderBottomColor: 'transparent',
+        borderLeftColor: 'transparent',
+    },
+    triangle__green: {
+        width: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        borderStyle: 'solid',
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        borderTopWidth: 16,
+        borderRightWidth: 16,
+        borderBottomWidth: 0,
+        borderLeftWidth: 0,
+        borderTopColor: '#80B8A0',
+        borderRightColor: 'transparent',
+        borderBottomColor: 'transparent',
+        borderLeftColor: 'transparent',
+    }
 });
 
 module.exports = styles;
