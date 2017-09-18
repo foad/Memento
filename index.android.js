@@ -96,21 +96,58 @@ export default class Memento extends Component {
             this.state.subjects = value;
         }).done();
         
-        if (this.state.subjects == null || this.state.subjects == undefined) {
-            this.state.subjects = [
-                { title: 'EE3A1', name: 'LH Computer Hardware and Digital Design', room: 'Education G33', start: '10:00', end: '12:00', lecturer: 'Dr Steven Quigley' },
-                { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Mech Eng G29', start: '13:00', end: '14:00', lecturer: 'Prof Chris Baber' }        
-            ];
+        if (this.state.semesters == null || this.state.semesters == undefined) {
+            this.state.semesters = {
+                autumn: {start: '2017/09/25', end: '2017/12/08'},
+                spring: {start: '2018/01/08', end: '2018/03/23'},
+                summer: {start: '2018/04/23', end: '2018/06/15'}
+            };
         }
+        
+        if (this.state.subjects == null || this.state.subjects == undefined) {
+            this.state.subjects = {
+                autumn: {
+                    '2': [
+                        { title: 'EE3A1', name: 'LH Computer Hardware and Digital Design', room: 'Education G33', start: '11:00', end: '13:00', lecturer: 'Dr Steven Quigley', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+                    ],
+                    '3': [
+                        { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Mech Eng G29', start: '09:00', end: '10:00', lecturer: 'Prof Chris Baber', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+                        { title: 'EE3A1', name: 'LH Computer Hardware and Digital Design', room: 'GKapp N216', start: '10:00', end: '12:00', lecturer: 'Dr Steven Quigley', type: 'Lab', weeks: [2, 3, 4, 5, 6, 7, 8, 9, 10] }
+                    ],
+                    '4': [
+                        { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Arts LR7', start: '13:00', end: '14:00', lecturer: 'Prof Chris Baber', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+                    ]
+                },
+                spring: {},
+                summer: {}
+            };
+        }
+        
+        var start = new Date(this.state.semesters.autumn.start);
+        var week = 1;
+        var subjects = [];
+        for (var key in this.state.subjects.autumn) {
+            if (!this.state.subjects.autumn.hasOwnProperty(key)) break;
+            subjects.push(<Text style={styles.main__title}>{this.getDayName(parseInt(key))}</Text>);
+            this.state.subjects.autumn[key].filter((subject) => {
+                return (subject.weeks.indexOf(week) != -1);
+            }).map((subject) => {
+                console.log(subject.title);
+                subjects.push(<SubjectItem data={subject} />);
+            });
+        };
         
         this.state.view = (
             <ScrollView style={styles.main}>
-                <Text style={styles.main__title}>Monday</Text>
-                {this.state.subjects.map(function(subject) {
-                    return <SubjectItem data={subject} />;
-                })}
+                <Text style={styles.main__title}>Week beginning 25th September 2017</Text>
+                {subjects}
             </ScrollView>
         );
+    }
+    
+    getDayName(number) {
+        var days = ['Monday', "Tueday", 'Wednesday', 'Thursday', 'Friday', 'Sunday'];
+        return days[number - 1];
     }
     
     render() {
