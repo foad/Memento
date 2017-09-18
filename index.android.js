@@ -6,7 +6,8 @@ import {
     View,
     ScrollView,
     TouchableHighlight,
-    Animated
+    Animated,
+    AsyncStorage
 } from 'react-native';
 
 class TopBar extends Component {
@@ -79,19 +80,36 @@ class SubjectItem extends Component {
     }
 }
 
+var subjects;
+
 export default class Memento extends Component {
+    
+    constructor(props) {
+        super(props);
+        
+        AsyncStorage.getItem("subjects").then((value) => {
+            subjects = value;
+        }).done();
+        
+        if (subjects == null || subjects == undefined) {
+            subjects = [
+                { title: 'EE3A1', name: 'LH Computer Hardware and Digital Design', room: 'Education G33', start: '10:00', end: '12:00', lecturer: 'Dr Steven Quigley' },
+                { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Mech Eng G29', start: '13:00', end: '14:00', lecturer: 'Prof Chris Baber' }        
+            ];
+        }
+    }
+    
     render() {
         
-        var subject1 = { title: 'EE3A1', name: 'LH Computer Hardware and Digital Design', room: 'Education G33', start: '10:00', end: '12:00', lecturer: 'Dr Steven Quigley' }
-        var subject2 = { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Mech Eng G29', start: '13:00', end: '14:00', lecturer: 'Prof Chris Baber' }
         
         return (
             <View style={styles.container}>
                 <TopBar />
                 <ScrollView style={styles.main}>
                     <Text style={styles.main__title}>Monday</Text>
-                    <SubjectItem data={subject1} />
-                    <SubjectItem data={subject2}/>
+                    {subjects.map(function(subject) {
+                        return <SubjectItem data={subject} />;
+                    })}
                 </ScrollView>
             </View>
         );
