@@ -4,7 +4,9 @@ import {
     StyleSheet,
     Text,
     View,
-    ScrollView
+    ScrollView,
+    TouchableHighlight,
+    Animated
 } from 'react-native';
 
 class TopBar extends Component {
@@ -18,18 +20,61 @@ class TopBar extends Component {
 }
 
 class SubjectItem extends Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            title: props.data.title,
+            name: props.data.name,
+            room: props.data.room,
+            start: props.data.start,
+            end: props.data.end,
+            lecturer: props.data.lecturer,
+            expanded: false,
+            animation: new Animated.Value(),
+            minHeight: 72,
+            maxHeight: 96,
+        };
+        this.state.animation.setValue(this.state.minHeight);
+    }
+    
+    toggle() {
+        let initialValue = this.state.expanded ? this.state.maxHeight + this.state.minHeight : this.state.minHeight,
+            finalValue   = this.state.expanded ? this.state.minHeight : this.state.maxHeight + this.state.minHeight;
+        
+        this.setState({
+            expanded: !this.state.expanded
+        });
+        
+        this.state.animation.setValue(initialValue);
+        Animated.spring(
+            this.state.animation,
+            {
+                toValue: finalValue
+            }
+        ).start();
+    }
+    
     render() {
         return (
-            <View style={styles.subject}>
-                <View style={styles.subject__left}>
-                    <Text style={styles.subject__title}>{this.props.data.title}</Text>
-                    <Text style={styles.subject__room}>{this.props.data.room}</Text>
-                </View>
-                <View style={styles.subject__right}>
-                    <Text style={styles.subject__start}>{this.props.data.start}</Text>
-                    <Text style={styles.subject__end}>{this.props.data.end}</Text>
-                </View>
-            </View>
+            <TouchableHighlight onPress={this.toggle.bind(this)} underlayColor={'transparent'}>
+                <Animated.View style={[styles.subject, {height: this.state.animation}]}>
+                    <View style={styles.subject__main}>
+                        <View style={styles.subject__left}>
+                            <Text style={styles.subject__title}>{this.state.title}</Text>
+                            <Text style={styles.subject__room}>{this.state.room}</Text>
+                        </View>
+                        <View style={styles.subject__right}>
+                            <Text style={styles.subject__start}>{this.state.start}</Text>
+                            <Text style={styles.subject__end}>{this.state.end}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.subject__info}>
+                        <Text>{this.state.name}</Text>
+                        <Text>{this.state.lecturer}</Text>
+                    </View>
+                </Animated.View>
+            </TouchableHighlight>
         );
     }
 }
@@ -37,8 +82,8 @@ class SubjectItem extends Component {
 export default class Memento extends Component {
     render() {
         
-        var subject1 = { title: 'EE3A1', room: 'GKapp 207', start: '10:00', end: '12:00' }
-        var subject2 = { title: 'HCI', room: 'Comp Sci 102', start: '13:00', end: '14:00' }
+        var subject1 = { title: 'EE3A1', name: 'LH Computer Hardware and Digital Design', room: 'Education G33', start: '10:00', end: '12:00', lecturer: 'Dr Steven Quigley' }
+        var subject2 = { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Mech Eng G29', start: '13:00', end: '14:00', lecturer: 'Prof Chris Baber' }
         
         return (
             <View style={styles.container}>
@@ -88,9 +133,14 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         borderBottomWidth: 1,
         borderBottomColor: '#DDDDDD',
+    },
+    subject__main: {  
         alignItems: 'flex-start',
         flexDirection: 'row',
         flexWrap: 'nowrap',
+    },
+    subject__info: {
+        marginTop: 32,
     },
     subject__left: {
         flex: 1,
