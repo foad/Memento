@@ -24,6 +24,20 @@ var styles = React.StyleSheet.create({
         fontFamily: 'sans-serif-thin',
         fontSize: 18,
     },
+    topbar__menubuttoncontainer: {
+        height: 32,
+        width: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        right: 16,
+        top: 16,
+        bottom: 0,
+    },
+    topbar__menubutton: {
+        height: 16,
+        width: 16,
+    },
     topbar__navigation: {
         height: 32,
         flexDirection: 'row',
@@ -152,6 +166,15 @@ var styles = React.StyleSheet.create({
         borderRightColor: 'transparent',
         borderBottomColor: 'transparent',
         borderLeftColor: 'transparent',
+    },
+    menu: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+    },
+    menu__contents: {
+        margin: 10,
+        fontSize: 15,
+        textAlign: 'left',
     }
 });
 

@@ -9,6 +9,7 @@ import {
     Animated,
     AsyncStorage,
     Image,
+    DrawerLayoutAndroid,
 } from 'react-native';
 
 // DISABLE WARNINGS
@@ -44,6 +45,9 @@ class TopBar extends Component {
     render() {
         return (
             <View style={[styles.topbar, {height: this.state.size}]}>
+                <TouchableHighlight style={styles.topbar__menubuttoncontainer} onPress={() => this.props.openMenu()} underlayColor={'#E0E0E0'}>
+                        <Image style={styles.topbar__menubutton} source={require('./img/menu.png')} />
+                </TouchableHighlight>
                 <View style={styles.topbar__titlecontainer}>
                     <Text style={styles.topbar__title}>M E M E N T O</Text>
                 </View>
@@ -123,6 +127,32 @@ class SubjectItem extends Component {
     }
 }
 
+class MenuDrawer extends Component {
+    constructor(props) {
+        super(props);
+        this.openDrawer = this.openDrawer.bind(this);
+    }
+    render() {
+        var navigationView = (
+            <View style={styles.menu}>
+              <Text style={styles.menu__contents}>Drawer contents</Text>
+            </View>
+        );
+        return (
+            <DrawerLayoutAndroid
+                ref={(_drawer) => this.drawer = _drawer}
+                drawerWidth={240}
+                drawerPosition={DrawerLayoutAndroid.positions.Left}
+                renderNavigationView={() => navigationView}>
+            {this.props.children}
+            </DrawerLayoutAndroid>
+        );
+    }
+    openDrawer() {
+        this.drawer.openDrawer();
+    }
+}
+
 var subjects;
 
 export default class Memento extends Component {
@@ -131,6 +161,7 @@ export default class Memento extends Component {
         super(props);
         
         this.state = {};
+        this.openMenu = this.openMenu.bind(this);
         
         this.state.viewType = 'week';
         
@@ -186,6 +217,10 @@ export default class Memento extends Component {
         );
         
         this.state.view = this.getWeekView(this.state.semester, this.state.week);
+    }
+    
+    openMenu() {
+        this.menudrawer.openDrawer();
     }
     
     componentDidMount() {
@@ -283,10 +318,13 @@ export default class Memento extends Component {
     
     render() {
         return (
-            <View style={styles.container}>
-                <TopBar type={this.state.viewType} previous={this.previous.bind(this)} next={this.next.bind(this)} />
-                {this.state.view}
-            </View>
+            <MenuDrawer
+            ref={(_menudrawer) => this.menudrawer = _menudrawer}>
+                <View style={styles.container}>
+                    <TopBar type={this.state.viewType} previous={this.previous.bind(this)} next={this.next.bind(this)} openMenu={this.openMenu.bind(this)} />
+                    {this.state.view}
+                </View>
+            </MenuDrawer>
         );
     }
 }
