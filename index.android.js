@@ -142,6 +142,22 @@ class MenuDrawer extends Component {
     constructor(props) {
         super(props);
         
+        this.semesters = props.semesters;
+        this.semesterView = [];
+        
+        for (var key in this.semesters) {
+            if (!this.semesters.hasOwnProperty(key)) break;
+            var title = key.charAt(0).toUpperCase() + key.slice(1);
+            this.semesterView.push(
+                <TouchableHighlight style={{marginBottom: 8, marginTop: 8}} onPress={() => {}} underlayColor={'#EFEFEF'}>
+                    <View style={styles.menu__semester}>
+                        <Text style={styles.menu__semestertitle}>{title}</Text>
+                        <Text style={styles.menu__semesterdate}>[{this.semesters[key].start} -> {this.semesters[key].end}]</Text>
+                    </View>
+                </TouchableHighlight>
+            );
+        }
+        
         // Bind openDrawer method to instance
         this.openDrawer = this.openDrawer.bind(this);
     }
@@ -150,7 +166,8 @@ class MenuDrawer extends Component {
         // Contents of drawer
         var navigationView = (
             <View style={styles.menu}>
-              <Text style={styles.menu__contents}>Drawer contents</Text>
+              <Text style={styles.menu__subtitle}>CHOOSE SEMESTER</Text>
+              {this.semesterView}
             </View>
         );
         
@@ -280,7 +297,7 @@ export default class Memento extends Component {
         // Return resulting JSX
         return (
             <ScrollView style={styles.main}>
-                <Text style={styles.main__weektitle}>{this.getWeekTitle(date).toUpperCase()}</Text>
+                <Text style={styles.main__weektitle}>{this.getWeekTitle(date, week).toUpperCase()}</Text>
                 {subjects}
             </ScrollView>
         );
@@ -316,9 +333,9 @@ export default class Memento extends Component {
         return fulldate;
     }
     
-    getWeekTitle(date) {
+    getWeekTitle(date, week) {
         // Get title for weekly view from date
-        var weektitle = 'Week beginning ';
+        var weektitle = 'Week ' + week + ' beginning ';
         weektitle += date.getDate() + this.getOrdinal(date.getDate());
         weektitle += ' ' + this.getMonthName(date.getMonth());
         weektitle += ' ' + date.getFullYear();
@@ -369,7 +386,7 @@ export default class Memento extends Component {
     render() {
         return (
             <MenuDrawer
-            ref={(_menudrawer) => this.menudrawer = _menudrawer}>
+            ref={(_menudrawer) => this.menudrawer = _menudrawer} semesters={this.state.semesters}>
                 <View style={styles.container}>
                     <TopBar type={this.state.viewType} previous={this.previous.bind(this)} next={this.next.bind(this)} openMenu={this.openMenu.bind(this)} />
                     {this.state.view}

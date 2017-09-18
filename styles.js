@@ -175,7 +175,30 @@ var styles = React.StyleSheet.create({
         margin: 10,
         fontSize: 15,
         textAlign: 'left',
-    }
+    },
+    menu__subtitle: {
+        fontWeight: 'bold',
+        fontSize: 12,
+        color: '#3E4A51',
+        padding: 16,
+        marginTop: 16,
+        alignSelf: 'stretch',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E0E0E0',
+    },
+    menu__semester: {
+        padding: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: '#6699CC',
+    },
+    menu__semestertitle: {
+        fontSize: 14,
+        color: '#444444'
+    },
+    menu__semesterdate: {
+        fontSize: 10,
+        color: '#9C9C9C',
+    },
 });
 
 module.exports = styles;
