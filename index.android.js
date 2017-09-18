@@ -20,14 +20,18 @@ class TopBar extends Component {
     constructor(props) {
         super(props);
         
+        // Initial state
         this.state = {
-            viewType: props.type,
-            size: 64,
-            buttons: [],
+            viewType: props.type, // Type of view, e.g. weekly view, semester view etc
+            size: 64, // Default height of topbar
+            buttons: [], // Container for topbar buttons
         }
         
+        // If weekly view
         if (this.state.viewType == 'week') {
-            this.state.size = 96;
+            this.state.size = 96; // Accomodate 32px high buttons
+            
+            // Create and add buttons to state
             this.state.buttons.push(
                 <View style={styles.topbar__navigation}>
                     <TouchableHighlight style={styles.topbar__previous} onPress={() => this.props.previous()} underlayColor={'#E0E0E0'}>
@@ -61,6 +65,7 @@ class SubjectItem extends Component {
     constructor(props) {
         super(props);
         
+        // Default state, get subject properties from data parameter
         this.state = {
             title: props.data.title,
             name: props.data.name,
@@ -69,29 +74,35 @@ class SubjectItem extends Component {
             end: props.data.end,
             lecturer: props.data.lecturer,
             type: props.data.type,
-            expanded: false,
+            expanded: false, // Whether card is expanded or not
             animation: new Animated.Value(),
-            minHeight: 72,
-            maxHeight: 96,
-            triangle: [],
+            minHeight: 72, // Minimum height, unexpanded
+            maxHeight: 96, // Maximum height, expanded
+            triangle: [], // Triangle container in case of non-lecture subject
         };
-        this.state.animation.setValue(this.state.minHeight);
+        this.state.animation.setValue(this.state.minHeight); // Default to unexpanded
         
+        // If lab, show blue triangle
         if (this.state.type == 'Lab') {
             this.state.triangle.push(<View style={styles.triangle__blue} />);
-        } else if (this.state.type == 'Tutorial') {
+        }
+        // If tutorial, show green triangle
+        else if (this.state.type == 'Tutorial') {
             this.state.triangle.push(<View style={styles.triangle__green} />);
         }
     }
     
     toggle() {
+        // Animation values
         let initialValue = this.state.expanded ? this.state.maxHeight + this.state.minHeight : this.state.minHeight,
             finalValue   = this.state.expanded ? this.state.minHeight : this.state.maxHeight + this.state.minHeight;
         
+        // Flip expanded state
         this.setState({
             expanded: !this.state.expanded
         });
         
+        // Animate close/open
         this.state.animation.setValue(initialValue);
         Animated.spring(
             this.state.animation,
@@ -130,14 +141,20 @@ class SubjectItem extends Component {
 class MenuDrawer extends Component {
     constructor(props) {
         super(props);
+        
+        // Bind openDrawer method to instance
         this.openDrawer = this.openDrawer.bind(this);
     }
+    
     render() {
+        // Contents of drawer
         var navigationView = (
             <View style={styles.menu}>
               <Text style={styles.menu__contents}>Drawer contents</Text>
             </View>
         );
+        
+        // Display DrawerLayoutAndroid with contents
         return (
             <DrawerLayoutAndroid
                 ref={(_drawer) => this.drawer = _drawer}
@@ -148,7 +165,9 @@ class MenuDrawer extends Component {
             </DrawerLayoutAndroid>
         );
     }
+    
     openDrawer() {
+        // Open/close drawer
         this.drawer.openDrawer();
     }
 }
@@ -160,11 +179,16 @@ export default class Memento extends Component {
     constructor(props) {
         super(props);
         
+        // Default state
         this.state = {};
+        
+        // Bind openMenu function to instance
         this.openMenu = this.openMenu.bind(this);
         
+        // Default weekly view
         this.state.viewType = 'week';
         
+        // If semesters not loaded, load in manual settings
         if (this.state.semesters == null || this.state.semesters == undefined) {
             this.state.semesters = {
                 autumn: {start: '2017/09/25', end: '2017/12/08'},
@@ -173,6 +197,7 @@ export default class Memento extends Component {
             };
         }
         
+        // If subjects not loaded, load in manual settings
         if (this.state.subjects == null || this.state.subjects == undefined) {
             this.state.subjects = {
                 autumn: {
@@ -209,28 +234,37 @@ export default class Memento extends Component {
             };
         }
         
+        // Default settings at runtime
         this.state.semester = 'spring';
         this.state.week = 7;
+        
+        // Calculate no. weeks in semester
         this.state.maxweek = this.calculateWeeksBetween(
             new Date(this.state.semesters[this.state.semester].start),
             new Date(this.state.semesters[this.state.semester].end)
         );
         
+        // Get weekly view and put into state
         this.state.view = this.getWeekView(this.state.semester, this.state.week);
     }
     
     openMenu() {
+        // Open/close drawer
         this.menudrawer.openDrawer();
     }
     
     componentDidMount() {
+        // Pass forward state
         this.setState((previousState) => { return previousState });
     }
     
     getWeekView(semester, week) {
+        // Get date for week
         var start = new Date(this.state.semesters[semester].start);
         var date = new Date(start.getTime()); date.setDate(date.getDate() + ((week-1) * 7));
         var subjects = [];
+        
+        // Get subjects for the week and convert to JSX
         for (var key in this.state.subjects[semester]) {
             if (!this.state.subjects[semester].hasOwnProperty(key)) break;
             var first = true;
@@ -243,6 +277,7 @@ export default class Memento extends Component {
             });
         };
         
+        // Return resulting JSX
         return (
             <ScrollView style={styles.main}>
                 <Text style={styles.main__weektitle}>{this.getWeekTitle(date).toUpperCase()}</Text>
@@ -252,28 +287,37 @@ export default class Memento extends Component {
     }
     
     calculateWeeksBetween(start, end) {
+        // No. milliseconds in one week
         var ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
         
+        // Get start and end times in ms
         var start_ms = start.getTime();
         var end_ms = end.getTime();
         
+        // Calculate difference
         var difference_ms = Math.abs(end_ms - start_ms);
         
+        // Return no. weeks
         return Math.floor(difference_ms / ONE_WEEK);
     }
     
     getFullDate(date, day) {
+        
         var fulldate = '';
-        var d = new Date(date.getTime());
+        var d = new Date(date.getTime()); // Clone date
+        
+        // Display full date
         d.setDate(d.getDate() + (day - 1));
         fulldate += d.getDate() + '/';
         fulldate += this.getMonthNumber(d.getMonth()) + '/';
         fulldate += d.getFullYear();
         
+    
         return fulldate;
     }
     
     getWeekTitle(date) {
+        // Get title for weekly view from date
         var weektitle = 'Week beginning ';
         weektitle += date.getDate() + this.getOrdinal(date.getDate());
         weektitle += ' ' + this.getMonthName(date.getMonth());
@@ -283,26 +327,31 @@ export default class Memento extends Component {
     }
     
     getOrdinal(number) {
-      return (number > 20 || number < 10) ? ([false, "st", "nd", "rd"])[(number%10)] || "th" : "th";
+        // E.g. (1) => 'st' , (12) => 'nd' , (3) => 'rd' , (30) => 'th'
+        return (number > 20 || number < 10) ? ([false, "st", "nd", "rd"])[(number%10)] || "th" : "th";
     }
     
     getDayName(number) {
+        // Return day of the week from numeral
         var days = ['Monday', 'Tueday', 'Wednesday', 'Thursday', 'Friday', 'Sunday'];
         return days[number - 1];
     }
     
     getMonthName(number) {
+        // Return month from numeral
         var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         return months[number];
     }
     
     getMonthNumber(number) {
+        // Convert raw JS month number to formatted one, e.g. (2) => '03'
         number++;
         if (number < 10) return '0' + number;
         return number;
     }
     
     previous() {
+        // Go to previous week and re-render weekly view
         if (this.state.week != 1) {
             this.setState({view: this.getWeekView(this.state.semester, this.state.week - 1)});
             this.setState({week: this.state.week - 1});
@@ -310,6 +359,7 @@ export default class Memento extends Component {
     }
     
     next() {
+        // Go to next week and re-render weekly view
         if (this.state.week != this.state.maxweek) {
             this.setState({view: this.getWeekView(this.state.semester, this.state.week + 1)});
             this.setState({week: this.state.week + 1});
