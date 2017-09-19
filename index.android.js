@@ -33,7 +33,7 @@ class TopBar extends Component {
             
             // Create and add buttons to state
             this.state.buttons.push(
-                <View style={styles.topbar__navigation}>
+                <View key={'topbar__navigation'} style={styles.topbar__navigation}>
                     <TouchableHighlight style={styles.topbar__previous} onPress={() => this.props.previous()} underlayColor={'#E0E0E0'}>
                         <Image style={styles.topbar__button} source={require('./img/previous.png')} />
                     </TouchableHighlight>
@@ -84,11 +84,11 @@ class SubjectItem extends Component {
         
         // If lab, show blue triangle
         if (this.state.type == 'Lab') {
-            this.state.triangle.push(<View style={styles.triangle__blue} />);
+            this.state.triangle.push(<View key={'triangle__blue'} style={styles.triangle__blue} />);
         }
         // If tutorial, show green triangle
         else if (this.state.type == 'Tutorial') {
-            this.state.triangle.push(<View style={styles.triangle__green} />);
+            this.state.triangle.push(<View key={'triangle__green'} style={styles.triangle__green} />);
         }
     }
     
@@ -148,8 +148,9 @@ class MenuDrawer extends Component {
         for (var key in this.semesters) {
             if (!this.semesters.hasOwnProperty(key)) break;
             var title = key.charAt(0).toUpperCase() + key.slice(1);
+            let keyval = key;
             this.semesterView.push(
-                <TouchableHighlight style={{marginBottom: 8, marginTop: 8}} onPress={() => {}} underlayColor={'#EFEFEF'}>
+                <TouchableHighlight key={key} style={{marginBottom: 8, marginTop: 8}} onPress={() => {this.props.setSemester(keyval);}} underlayColor={'#EFEFEF'}>
                     <View style={styles.menu__semester}>
                         <Text style={styles.menu__semestertitle}>{title}</Text>
                         <Text style={styles.menu__semesterdate}>[{this.semesters[key].start} -> {this.semesters[key].end}]</Text>
@@ -252,8 +253,8 @@ export default class Memento extends Component {
         }
         
         // Default settings at runtime
-        this.state.semester = 'spring';
-        this.state.week = 7;
+        this.state.semester = 'autumn';
+        this.state.week = 1;
         
         // Calculate no. weeks in semester
         this.state.maxweek = this.calculateWeeksBetween(
@@ -288,9 +289,9 @@ export default class Memento extends Component {
             this.state.subjects[semester][key].filter((subject) => {
                 return (subject.weeks.indexOf(week) != -1);
             }).map((subject) => {
-                if (first) subjects.push(<Text style={styles.main__title}>{this.getDayName(parseInt(key)) + ' (' + this.getFullDate(date, key) + ')'}</Text>);
+                if (first) subjects.push(<Text key={key} style={styles.main__title}>{this.getDayName(parseInt(key)) + ' (' + this.getFullDate(date, key) + ')'}</Text>);
                 first = false;
-                subjects.push(<SubjectItem data={subject} />);
+                subjects.push(<SubjectItem key={[subject.title, subject.room, key]} data={subject} />);
             });
         };
         
@@ -382,11 +383,17 @@ export default class Memento extends Component {
             this.setState({week: this.state.week + 1});
         }
     }
+
+    setSemester(semester) {
+        this.setState({view: this.getWeekView(semester, 1)});
+        this.setState({semester: semester});
+        this.setState({week: 1});
+    }
     
     render() {
         return (
             <MenuDrawer
-            ref={(_menudrawer) => this.menudrawer = _menudrawer} semesters={this.state.semesters}>
+            ref={(_menudrawer) => this.menudrawer = _menudrawer} semesters={this.state.semesters} setSemester={this.setSemester.bind(this)}>
                 <View style={styles.container}>
                     <TopBar type={this.state.viewType} previous={this.previous.bind(this)} next={this.next.bind(this)} openMenu={this.openMenu.bind(this)} />
                     {this.state.view}
