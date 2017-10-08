@@ -219,14 +219,21 @@ export default class Memento extends Component {
         if (this.state.subjects == null || this.state.subjects == undefined) {
             this.state.subjects = {
                 autumn: {
+                    '1': [
+                        { title: 'Induction', name: '3rd Year Induction Talk', room: 'PHYW 117', start: '11:00', end: '13:00', lecturer: 'Prof Martin Russell', type: 'Lecture', weeks: [1] },
+                        { title: 'HCI', name: 'Human Computer Interaction', room: 'CPSC UG04', start: '11:00', end: '12:00', lecturer: 'Dr Rowanne Fleck', type: 'Lab', weeks: [2, 3, 4, 5, 6, 7, 8, 9, 10] },
+                        { title: 'HCI', name: 'Human Computer Interaction', room: 'Mech Eng G34', start: '14:00', end: '15:00', lecturer: 'Dr Rowanne Fleck', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+                    ],
                     '2': [
-                        { title: 'EE3A1', name: 'Computer Hardware and Digital Design', room: 'Education G33', start: '11:00', end: '13:00', lecturer: 'Dr Steven Quigley', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+                        { title: 'EE3A1', name: 'Computer Hardware and Digital Design', room: 'Education G33', start: '11:00', end: '13:00', lecturer: 'Dr Steven Quigley', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+                        { title: 'HCI', name: 'Human Computer Interaction', room: 'CPSC UG04', start: '14:00', end: '15:00', lecturer: 'Dr Rowanne Fleck', type: 'Lecture', weeks: [2, 3, 4, 5, 6, 7, 8, 9, 10] },
                     ],
                     '3': [
-                        { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Mech Eng G29', start: '09:00', end: '10:00', lecturer: 'Prof Chris Baber', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
-                        { title: 'EE3A1', name: 'Computer Hardware and Digital Design', room: 'GKapp N216', start: '10:00', end: '12:00', lecturer: 'Dr Steven Quigley', type: 'Lab', weeks: [2, 3, 4, 5, 6, 7, 8, 9, 10] }
+                        { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Mech Eng G29', start: '09:00', end: '10:00', lecturer: 'Prof Chris Baber', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
                     ],
                     '4': [
+                        { title: 'EE3A1', name: 'Computer Hardware and Digital Design', room: 'GKapp N216', start: '10:00', end: '12:00', lecturer: 'Dr Steven Quigley', type: 'Lab', weeks: [2, 3, 4, 5, 6, 7, 8, 9, 10] },
+                        { title: 'HCI', name: 'Human Computer Interaction', room: 'Mech Eng G29', start: '12:00', end: '13:00', lecturer: 'Dr Rowanne Fleck', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
                         { title: 'Org & Mgmt', name: 'Organisation and Management', room: 'Arts LR7', start: '13:00', end: '14:00', lecturer: 'Prof Chris Baber', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
                     ]
                 },
@@ -252,9 +259,10 @@ export default class Memento extends Component {
             };
         }
         
+        
+        
         // Default settings at runtime
-        this.state.semester = 'autumn';
-        this.state.week = 1;
+        [this.state.semester, this.state.week] = this.getCurrentWeek();
         
         // Calculate no. weeks in semester
         this.state.maxweek = this.calculateWeeksBetween(
@@ -302,6 +310,34 @@ export default class Memento extends Component {
                 {subjects}
             </ScrollView>
         );
+    }
+    
+    getCurrentWeek() {
+        // No. milliseconds in one week
+        var ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
+        
+        var today = new Date();
+        
+        // Loop through each semester
+        for (var key in this.state.semesters) {
+            if (!this.state.semesters.hasOwnProperty(key)) continue;
+            var weekStart = new Date(this.state.semesters[key].start);
+            var semesterEnd = new Date(this.state.semesters[key].end);
+            var weekEnd = new Date(weekStart.getTime() + ONE_WEEK);
+            var week = 1;
+            
+            // Loop through each week in semester
+            while(weekStart.getTime() < semesterEnd.getTime()) {
+                if (today.getTime() >= weekStart.getTime() && today.getTime() <= weekEnd.getTime())
+                    return [key, week];
+                
+                weekStart = new Date(weekEnd.getTime());
+                weekEnd = new Date(weekStart.getTime() + ONE_WEEK);
+                week++;
+            }
+        }
+        
+        return ['autumn', 1];
     }
     
     calculateWeeksBetween(start, end) {
