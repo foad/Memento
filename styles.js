@@ -63,6 +63,9 @@ var styles = React.StyleSheet.create({
     },
     main: {
         flex: 1,
+    },
+    main__view: {
+        flex: 1,
         padding: 8,
     },
     main__title: {
@@ -163,6 +166,23 @@ var styles = React.StyleSheet.create({
         borderBottomWidth: 0,
         borderLeftWidth: 0,
         borderTopColor: '#80B8A0',
+        borderRightColor: 'transparent',
+        borderBottomColor: 'transparent',
+        borderLeftColor: 'transparent',
+    },
+    triangle__orange: {
+        width: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        borderStyle: 'solid',
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        borderTopWidth: 16,
+        borderRightWidth: 16,
+        borderBottomWidth: 0,
+        borderLeftWidth: 0,
+        borderTopColor: '#FFB347',
         borderRightColor: 'transparent',
         borderBottomColor: 'transparent',
         borderLeftColor: 'transparent',

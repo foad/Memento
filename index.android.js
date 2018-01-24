@@ -9,186 +9,15 @@ import {
     Animated,
     AsyncStorage,
     Image,
-    DrawerLayoutAndroid,
 } from 'react-native';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures'
+
+import TopBar from './components/TopBar'
+import SubjectItem from './components/SubjectItem'
+import MenuDrawer from './components/MenuDrawer'
 
 // DISABLE WARNINGS
 console.disableYellowBox = true;
-
-class TopBar extends Component {
-    
-    constructor(props) {
-        super(props);
-        
-        // Initial state
-        this.state = {
-            viewType: props.type, // Type of view, e.g. weekly view, semester view etc
-            size: 64, // Default height of topbar
-            buttons: [], // Container for topbar buttons
-        }
-        
-        // If weekly view
-        if (this.state.viewType == 'week') {
-            this.state.size = 96; // Accomodate 32px high buttons
-            
-            // Create and add buttons to state
-            this.state.buttons.push(
-                <View key={'topbar__navigation'} style={styles.topbar__navigation}>
-                    <TouchableHighlight style={styles.topbar__previous} onPress={() => this.props.previous()} underlayColor={'#E0E0E0'}>
-                        <Image style={styles.topbar__button} source={require('./img/previous.png')} />
-                    </TouchableHighlight>
-                    <TouchableHighlight style={styles.topbar__next} onPress={() => this.props.next()} underlayColor={'#E0E0E0'}>
-                        <Image style={styles.topbar__button} source={require('./img/next.png')} />
-                    </TouchableHighlight>
-                </View>
-            );
-        }
-        
-    }
-    
-    render() {
-        return (
-            <View style={[styles.topbar, {height: this.state.size}]}>
-                <TouchableHighlight style={styles.topbar__menubuttoncontainer} onPress={() => this.props.openMenu()} underlayColor={'#E0E0E0'}>
-                        <Image style={styles.topbar__menubutton} source={require('./img/menu.png')} />
-                </TouchableHighlight>
-                <View style={styles.topbar__titlecontainer}>
-                    <Text style={styles.topbar__title}>M E M E N T O</Text>
-                </View>
-                {this.state.buttons}
-            </View>
-        );
-    }
-}
-
-class SubjectItem extends Component {
-    constructor(props) {
-        super(props);
-        
-        // Default state, get subject properties from data parameter
-        this.state = {
-            title: props.data.title,
-            name: props.data.name,
-            room: props.data.room,
-            start: props.data.start,
-            end: props.data.end,
-            lecturer: props.data.lecturer,
-            type: props.data.type,
-            expanded: false, // Whether card is expanded or not
-            animation: new Animated.Value(),
-            minHeight: 72, // Minimum height, unexpanded
-            maxHeight: 96, // Maximum height, expanded
-            triangle: [], // Triangle container in case of non-lecture subject
-        };
-        this.state.animation.setValue(this.state.minHeight); // Default to unexpanded
-        
-        // If lab, show blue triangle
-        if (this.state.type == 'Lab') {
-            this.state.triangle.push(<View key={'triangle__blue'} style={styles.triangle__blue} />);
-        }
-        // If tutorial, show green triangle
-        else if (this.state.type == 'Tutorial') {
-            this.state.triangle.push(<View key={'triangle__green'} style={styles.triangle__green} />);
-        }
-    }
-    
-    toggle() {
-        // Animation values
-        let initialValue = this.state.expanded ? this.state.maxHeight + this.state.minHeight : this.state.minHeight,
-            finalValue   = this.state.expanded ? this.state.minHeight : this.state.maxHeight + this.state.minHeight;
-        
-        // Flip expanded state
-        this.setState({
-            expanded: !this.state.expanded
-        });
-        
-        // Animate close/open
-        this.state.animation.setValue(initialValue);
-        Animated.spring(
-            this.state.animation,
-            {
-                toValue: finalValue
-            }
-        ).start();
-    }
-
-    render() {
-        return (
-            <TouchableHighlight onPress={this.toggle.bind(this)} underlayColor={'transparent'}>
-                <Animated.View style={[styles.subject, {height: this.state.animation}]}>
-                    <View style={styles.subject__main}>
-                        <View style={styles.subject__left}>
-                            <Text style={styles.subject__title}>{this.state.title}</Text>
-                            <Text style={styles.subject__room}>{this.state.room}</Text>
-                        </View>
-                        <View style={styles.subject__right}>
-                            <Text style={styles.subject__start}>{this.state.start}</Text>
-                            <Text style={styles.subject__end}>{this.state.end}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.subject__info}>
-                        <Text>{this.state.name}</Text>
-                        <Text>{this.state.lecturer}</Text>
-                        <Text>{this.state.type}</Text>
-                    </View>
-                    {this.state.triangle}
-                </Animated.View>
-            </TouchableHighlight>
-        );
-    }
-}
-
-class MenuDrawer extends Component {
-    constructor(props) {
-        super(props);
-        
-        this.semesters = props.semesters;
-        this.semesterView = [];
-        
-        for (var key in this.semesters) {
-            if (!this.semesters.hasOwnProperty(key)) break;
-            var title = key.charAt(0).toUpperCase() + key.slice(1);
-            let keyval = key;
-            this.semesterView.push(
-                <TouchableHighlight key={key} style={{marginBottom: 8, marginTop: 8}} onPress={() => {this.props.setSemester(keyval);}} underlayColor={'#EFEFEF'}>
-                    <View style={styles.menu__semester}>
-                        <Text style={styles.menu__semestertitle}>{title}</Text>
-                        <Text style={styles.menu__semesterdate}>[{this.semesters[key].start} -> {this.semesters[key].end}]</Text>
-                    </View>
-                </TouchableHighlight>
-            );
-        }
-        
-        // Bind openDrawer method to instance
-        this.openDrawer = this.openDrawer.bind(this);
-    }
-    
-    render() {
-        // Contents of drawer
-        var navigationView = (
-            <View style={styles.menu}>
-              <Text style={styles.menu__subtitle}>CHOOSE SEMESTER</Text>
-              {this.semesterView}
-            </View>
-        );
-        
-        // Display DrawerLayoutAndroid with contents
-        return (
-            <DrawerLayoutAndroid
-                ref={(_drawer) => this.drawer = _drawer}
-                drawerWidth={240}
-                drawerPosition={DrawerLayoutAndroid.positions.Left}
-                renderNavigationView={() => navigationView}>
-            {this.props.children}
-            </DrawerLayoutAndroid>
-        );
-    }
-    
-    openDrawer() {
-        // Open/close drawer
-        this.drawer.openDrawer();
-    }
-}
 
 var subjects;
 
@@ -312,7 +141,7 @@ export default class Memento extends Component {
         
         // Return resulting JSX
         return (
-            <ScrollView style={styles.main}>
+            <ScrollView style={styles.main__view}>
                 <Text style={styles.main__weektitle}>{this.getWeekTitle(date, week).toUpperCase()}</Text>
                 {subjects}
             </ScrollView>
@@ -359,7 +188,7 @@ export default class Memento extends Component {
         var difference_ms = Math.abs(end_ms - start_ms);
         
         // Return no. weeks
-        return Math.floor(difference_ms / ONE_WEEK);
+        return Math.ceil(difference_ms / ONE_WEEK);
     }
     
     getFullDate(date, day) {
@@ -432,14 +261,39 @@ export default class Memento extends Component {
         this.setState({semester: semester});
         this.setState({week: 1});
     }
+
+    onSwipe(direction, state) {
+        const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
+        switch (direction) {
+            case SWIPE_LEFT:
+                this.next()
+                break
+            case SWIPE_RIGHT:
+                this.previous()
+                break
+            default:
+                return
+        }
+    }
     
     render() {
+
+        const config = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+          };
+
         return (
             <MenuDrawer
             ref={(_menudrawer) => this.menudrawer = _menudrawer} semesters={this.state.semesters} setSemester={this.setSemester.bind(this)}>
                 <View style={styles.container}>
                     <TopBar type={this.state.viewType} previous={this.previous.bind(this)} next={this.next.bind(this)} openMenu={this.openMenu.bind(this)} />
-                    {this.state.view}
+                    <GestureRecognizer
+                        style={styles.main}
+                        onSwipe={ (direction, state) => this.onSwipe(direction, state) }
+                        config={config}>
+                        {this.state.view}
+                    </GestureRecognizer>
                 </View>
             </MenuDrawer>
         );
