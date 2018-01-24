@@ -240,14 +240,21 @@ export default class Memento extends Component {
                 spring: {
                     '1': [
                         { title: '3D Simulation', name: 'Interactive 3D Simulation', room: 'Law LT3', start: '12:00', end: '14:00', lecturer: 'Dr Neil Cooke', type: 'Lecture', weeks: [2, 3, 4, 5, 6, 7, 8, 9, 10] },
-                        { title: '3D Simulation', name: 'Interactive 3D Simulation', room: 'GKapp N207', start: '12:00', end: '14:00', lecturer: 'Dr Neil Cooke', type: 'Lab', weeks: [2, 3, 5, 7] }
+                        { title: '3D Simulation', name: 'Interactive 3D Simulation', room: 'GKapp N207', start: '12:00', end: '14:00', lecturer: 'Dr Neil Cooke', type: 'Lab', weeks: [2, 3, 5, 8] }
                     ],
                     '2': [
-                        { title: 'EE3J2', name: 'Data Mining', room: 'Sports Science LT1', start: '10:00', end: '11:00', lecturer: 'Prof Martin Russell', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+                        { title: 'EE3J2', name: 'Data Mining', room: 'Sports Science LT1', start: '10:00', end: '11:00', lecturer: 'Prof Martin Russell', type: 'Lecture', weeks: [1] },
+                        { title: 'NI Search', name: 'Nature Inspired Search and Optimisation', room: 'Mech Eng G34', start: '10:00', end: '11:00', lecturer: 'Prof Jon Rowe', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
                         { title: 'Networking', name: 'Computer Networking', room: 'GKapp N224', start: '12:00', end: '14:00', lecturer: 'Dr John Easton', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
                     ],
+                    '3': [
+                        { title: 'BEng Project', name: 'BEng Final Year Project', room: 'GKapp N110', start: '11:00', end: '12:00', lecturer: 'Prof Robert Stone', type: 'Meeting', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] }
+                    ],
                     '4': [
-                        { title: 'EE3J2', name: 'Data Mining', room: 'GKapp NG22', start: '14:00', end: '16:00', lecturer: 'Prof Martin Russell', type: 'Lab', weeks: [5, 9] }
+                        { title: 'Data Analysis', name: 'Intelligent Data Analysis', room: 'Aston Webb LT', start: '10:00', end: '12:00', lecturer: 'Prof Peter Tino', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+                        { title: 'EE3J2', name: 'Data Mining', room: 'Sports Science LT1', start: '12:00', end: '13:00', lecturer: 'Prof Martin Russell', type: 'Lecture', weeks: [ 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+                        { title: 'NI Search', name: 'Nature Inspired Search and Optimisation', room: 'Mech Eng G33', start: '13:00', end: '14:00', lecturer: 'Dr Per Kristian Lehre', type: 'Lecture', weeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+                        { title: 'EE3J2', name: 'Data Mining', room: 'GKapp NG22', start: '14:00', end: '16:00', lecturer: 'Prof Martin Russell', type: 'Lab', weeks: [5, 9] },
                     ],
                     '5': [
                         { title: 'Networking', name: 'Computer Networking', room: 'GKapp NG16', start: '10:00', end: '11:00', lecturer: 'Dr John Easton', type: 'Tutorial', weeks: [4, 7, 10] },
